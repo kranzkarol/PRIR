@@ -1,4 +1,5 @@
 echo "Test\n"
 echo "start time: ", `date`
-./first "6_66_Fairfax',100);" > /dev/null
+#./first "6_66_Fairfax',100);" > /dev/null
+./parall >/dev/null
 echo "end time: ", `date`

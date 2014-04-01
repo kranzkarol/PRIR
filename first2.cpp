@@ -37,10 +37,6 @@ int main(int argc, char *argv[]){
 		int file_count = file__count(dp);		
 		
 		dp = opendir(".");
-		
-		#pragma omp parallel 
-		{
-		#pragma omp for schedule(static) 
 		for(int j=1;j<file_count;j++){
 			unsigned char isFile=0x8;
 			dirp=readdir(dp);
@@ -49,12 +45,8 @@ int main(int argc, char *argv[]){
 				file_name=dirp->d_name;
 				ifstream file1;
 				int line_count = line__count(file_name);
-				
 				file1.open(file_name.c_str());				
 				if(file1.is_open()){
-					#pragma omp parallel private(file1)
-					{
-					#pragma omp for schedule(static) 
 					for(int i=1;i<=line_count;i++){
 						getline(file1,line);
 						int pos = line.find(search);
@@ -65,15 +57,14 @@ int main(int argc, char *argv[]){
 							cout<<line.substr(pos,search.length());
 							cout<<"\e[033;0m";
 							cout<<line.substr(pos+search.length(),line.length())<<"\n";
+						
 						}
-					}
 					}
 				}else{
 					cout<<"Unable to open";
 				}
 				file1.close();
 			}
-		}
 		}
 	}
 	return 0;
