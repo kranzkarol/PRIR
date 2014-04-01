@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <dirent.h>
 #include <sstream>
+#include <dirent.h>
 using namespace std;
 
 
@@ -11,6 +12,28 @@ int main(int argc, char *argv[]){
 	char files[x][40];
 	char lines[x][40];
 	int i,j;
+	
+	DIR *dp;
+	dp = opendir(".");
+	struct dirent dirp;
+	struct dirent *result;
+	int return_code;
+	dp = opendir(".");
+	
+	for (return_code = readdir_r(dp, &dirp, &result);
+         result != NULL && return_code == 0;
+         return_code = readdir_r(dp, &dirp, &result))
+		 cout<<dirp.d_name<<endl;
+	
+	//dirp=readdir_r(dp,dirp,dirp);
+	// cout<<dirp<<endl;
+	// dirp=readdir(dp);
+	// dirp=readdir(dp);
+	// dirp=readdir(dp);
+	// dirp=readdir(dp);
+	// dirp=readdir(dp);
+	//unsigned char sd=dirp->d_type;
+	//cout<<"fefef "<<sd<<endl;
 	
 	ostringstream st;
 	
