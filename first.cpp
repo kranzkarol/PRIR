@@ -2,6 +2,7 @@
 #include <fstream>
 #include <string>
 #include <dirent.h>
+#include <sstream>
 using namespace std;
 
 int file__count(DIR *dp){
@@ -34,38 +35,46 @@ int main(int argc, char *argv[]){
 		cout<<"USAGE:\n "+string(argv[0])+" word_to_search";
 	}else{
 		string search = argv[1];
-		int file_count = file__count(dp);		
-		
+		int file_count = file__count(dp);	
+		ostringstream output;
+		ostringstream temp;
 		dp = opendir(".");
-		for(int j=1;j<file_count;j++){
-			unsigned char isFile=0x8;
+		int i,j;
+		unsigned char isFile=0x8;
+		ifstream file1;
+		int line_count;
+		int pos;
+		#pragma omp parallel for private(i,j,temp,dirp,file_name,file1,line_count,line,pos,isFile)\
+		shared(output,dp, search) 
+		for(i=1;i<file_count;i++){
 			dirp=readdir(dp);
 			if((string(dirp->d_name).find(".exe") == -1) and dirp->d_type == isFile){
-				cout<<"\nFile: "<<string(dirp->d_name)<<endl;
+				temp<<"\nFile: "<<string(dirp->d_name)<<endl;
+				//cout<<"\nFile: "<<string(dirp->d_name)<<endl;
 				file_name=dirp->d_name;
-				ifstream file1;
-				int line_count = line__count(file_name);
+				line_count = line__count(file_name);
 				file1.open(file_name.c_str());				
 				if(file1.is_open()){
-					for(int i=1;i<=line_count;i++){
+					for(j=1;j<=line_count;j++){
 						getline(file1,line);
-						int pos = line.find(search);
+						pos = line.find(search);
 						if (pos!=-1){
-							cout<<"Line: "<<i;
-							cout<<", "<<line.substr(0,pos);
-							cout<<"\e[033;31m";
-							cout<<line.substr(pos,search.length());
-							cout<<"\e[033;0m";
-							cout<<line.substr(pos+search.length(),line.length())<<"\n";
-							
+							temp<<"Line: "<<j;
+							temp<<", "<<line.substr(0,pos);
+							temp<<"\e[033;31m";
+							temp<<line.substr(pos,search.length());
+							temp<<"\e[033;0m";
+							temp<<line.substr(pos+search.length(),line.length())<<"\n";
 						}
 					}
+					output<<temp.str();
 				}else{
 					cout<<"Unable to open";
 				}
 				file1.close();
 			}
 		}
+		cout<<output.str();
 	}
 	return 0;
 }
