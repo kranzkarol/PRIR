@@ -3,7 +3,6 @@
 #include <string>
 #include <dirent.h>
 #include <sstream>
-
 #include <sys/stat.h>
 #include <sys/types.h>
 
@@ -50,20 +49,23 @@ int main(int argc, char *argv[]){
 		string search = argv[1];
 		int file_count = file__count(dp);	
 		ostringstream output;
-		ostringstream temp;
 		dp = opendir(".");
 		int i,j;
 		ifstream file1;
 		int line_count;
 		int pos;
-		#pragma omp parallel for private(i,j,temp,dirp,file_name,file1,line_count,line,pos,file_info)\
-		shared(output,dp, search) 
+		#pragma omp parallel for private(i,j,dirp,result,file_name,file1,line_count,line,pos,file_info) shared(output) 
 		for(i=1;i<file_count;i++){
+				
 			readdir_r(dp, &dirp, &result);
 			lstat(dirp.d_name, &file_info); 
 			
+			ostringstream tmp;
+			ostringstream temp;
+			
 			if((string(dirp.d_name).find(".exe") == -1) and !S_ISDIR(file_info.st_mode)){
-				temp<<"\nFile: "<<i<<" "<<string(dirp.d_name)<<endl;
+				//tmp<<"\nFile: "<<string(dirp.d_name)<<endl;
+				
 				file_name=dirp.d_name;
 				line_count = line__count(file_name);
 				file1.open(file_name.c_str());	
@@ -83,7 +85,9 @@ int main(int argc, char *argv[]){
 							temp<<line.substr(pos+search.length(),line.length())<<"\n";
 						}
 					}
-					output<<temp.str();
+					//tmp<<"\nFile: "<<string(dirp.d_name)<<endl;
+					//tmp<<temp;
+					output<<"\nFile: "<<string(dirp.d_name)<<endl<<temp.str();
 				}else{
 					cout<<"Unable to open";
 				}
