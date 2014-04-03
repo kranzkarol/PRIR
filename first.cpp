@@ -3,6 +3,10 @@
 #include <string>
 #include <dirent.h>
 #include <sstream>
+
+#include <sys/stat.h>
+#include <sys/types.h>
+
 using namespace std;
 
 int file__count(DIR *dp){
@@ -35,6 +39,7 @@ int main(int argc, char *argv[]){
 	dp = opendir(".");
 	struct dirent dirp;
 	struct dirent *result;
+	struct stat file_info;
 
 
 
@@ -48,16 +53,16 @@ int main(int argc, char *argv[]){
 		ostringstream temp;
 		dp = opendir(".");
 		int i,j;
-		unsigned char isFile=0x8;
 		ifstream file1;
 		int line_count;
 		int pos;
-		//#pragma omp parallel for private(i,j,temp,dirp,file_name,file1,line_count,line,pos,isFile)\
-		//shared(output,dp, search) 
+		#pragma omp parallel for private(i,j,temp,dirp,file_name,file1,line_count,line,pos,file_info)\
+		shared(output,dp, search) 
 		for(i=1;i<file_count;i++){
 			readdir_r(dp, &dirp, &result);
+			lstat(dirp.d_name, &file_info); 
 			
-			if((string(dirp.d_name).find(".exe") == -1) and dirp.d_type == isFile){
+			if((string(dirp.d_name).find(".exe") == -1) and !S_ISDIR(file_info.st_mode)){
 				temp<<"\nFile: "<<i<<" "<<string(dirp.d_name)<<endl;
 				file_name=dirp.d_name;
 				line_count = line__count(file_name);
@@ -68,9 +73,7 @@ int main(int argc, char *argv[]){
 
 						getline(file1,line);
 
-					
 						pos = line.find(search);
-						cout<<pos;
 						if (pos!=-1){
 							temp<<"Line: "<<j;
 							temp<<", "<<line.substr(0,pos);
@@ -87,8 +90,8 @@ int main(int argc, char *argv[]){
 				file1.close();
 			}
 		}
-		//cout<<output.str();
-		cout<<temp.str();
+		cout<<output.str();
+		//cout<<temp.str();
 	}
 	return 0;
 }
