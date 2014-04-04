@@ -85,9 +85,9 @@ int main(int argc, char *argv[]){
 							temp<<line.substr(pos+search.length(),line.length())<<"\n";
 						}
 					}
-					//tmp<<"\nFile: "<<string(dirp.d_name)<<endl;
-					//tmp<<temp;
-					output<<"\nFile: "<<string(dirp.d_name)<<endl<<temp.str();
+					if(!temp.str().empty()){
+						output<<"\nFile: "<<string(dirp.d_name)<<endl<<temp.str();
+					}
 				}else{
 					cout<<"Unable to open";
 				}

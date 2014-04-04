@@ -28,12 +28,13 @@ int main(int argc, char *argv[]){
 	struct dirent dirp;
 	struct dirent *result;
 
-	unsigned char isFile=0x8;
+	unsigned int y=-1;
+	cout<<y;
 
 	
 	for (i=0;i<9;i++){
 		readdir_r(dp, &dirp, &result);
-		if((string(dirp.d_name).find(".exe") == -1) and dirp.d_type == isFile){
+		if((string(dirp.d_name).find(".exe") == -1)){
 			
 			cout<<dirp.d_name<<" "<<dirp.d_type<<endl;
 		}
