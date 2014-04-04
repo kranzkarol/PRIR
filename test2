@@ -1,6 +1,6 @@
 echo "Test\n"
 echo "start time: ", `date`
 export OPM_DYNAMIC=true;
-export OMP_NESTED=true;
+#export OMP_NESTED=true;
 ./first2 "6_66_Fairfax',100);" > /dev/null
 echo "end time: ", `date`

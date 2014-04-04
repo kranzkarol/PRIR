@@ -3,6 +3,8 @@
 #include <string>
 #include <dirent.h>
 #include <sstream>
+#include <stdlib.h>
+
 #include <sys/stat.h>
 #include <sys/types.h>
 
@@ -40,9 +42,6 @@ int main(int argc, char *argv[]){
 	struct dirent *result;
 	struct stat file_info;
 
-
-
-
 	if (argc!=2){
 		cout<<"USAGE:\n "+string(argv[0])+" word_to_search";
 	}else{
@@ -64,7 +63,6 @@ int main(int argc, char *argv[]){
 			ostringstream temp;
 			
 			if((string(dirp.d_name).find(".exe") == -1) and !S_ISDIR(file_info.st_mode)){
-				//tmp<<"\nFile: "<<string(dirp.d_name)<<endl;
 				
 				file_name=dirp.d_name;
 				line_count = line__count(file_name);
@@ -86,7 +84,11 @@ int main(int argc, char *argv[]){
 						}
 					}
 					if(!temp.str().empty()){
-						output<<"\nFile: "<<string(dirp.d_name)<<endl<<temp.str();
+						char path [PATH_MAX];
+						char *ptr;
+						ptr = realpath(dirp.d_name,path);
+						
+						output<<endl<<ptr<<endl<<temp.str();
 					}
 				}else{
 					cout<<"Unable to open";
