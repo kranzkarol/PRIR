@@ -4,10 +4,8 @@
 #include <dirent.h>
 #include <sstream>
 #include <stdlib.h>
-
 #include <sys/stat.h>
 #include <sys/types.h>
-
 using namespace std;
 
 int file__count(DIR *dp){
@@ -57,22 +55,18 @@ int main(int argc, char *argv[]){
 		for(i=1;i<file_count;i++){
 				
 			readdir_r(dp, &dirp, &result);
+			file_name=dirp.d_name;
 			lstat(dirp.d_name, &file_info); 
-			
-			ostringstream tmp;
 			ostringstream temp;
 			
-			if((string(dirp.d_name).find(".exe") == -1) and !S_ISDIR(file_info.st_mode)){
+			if((string(file_name).find(".exe") == -1) and !S_ISDIR(file_info.st_mode)){
 				
-				file_name=dirp.d_name;
 				line_count = line__count(file_name);
 				file1.open(file_name.c_str());	
 				
 				if(file1.is_open()){
 					for(j=1;j<=line_count;j++){
-
 						getline(file1,line);
-
 						pos = line.find(search);
 						if (pos!=-1){
 							temp<<"Line: "<<j;
@@ -91,13 +85,12 @@ int main(int argc, char *argv[]){
 						output<<endl<<ptr<<endl<<temp.str();
 					}
 				}else{
-					cout<<"Unable to open";
+					output<<"Unable to open";
 				}
 				file1.close();
 			}
 		}
 		cout<<output.str();
-		//cout<<temp.str();
 	}
 	return 0;
 }
